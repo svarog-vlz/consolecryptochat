@@ -1,0 +1,25 @@
+{
+  "name": "cryptochat",
+  "version": "1.0.0",
+  "description": "Console cryptochat",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/svarog-vlz/consolecryptochat.git"
+  },
+  "author": "Aleksey Smirnov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/svarog-vlz/consolecryptochat/issues"
+  },
+  "homepage": "https://github.com/svarog-vlz/consolecryptochat#readme",
+  "dependencies": {
+    "bn.js": "^4.11.8",
+    "diffie-hellman-key-exchange": "^1.2.2",
+    "node-rsa": "^0.4.2",
+    "swim": "^0.6.0"
+  }
+}
