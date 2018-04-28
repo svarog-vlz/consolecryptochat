@@ -1,15 +1,18 @@
-let net=require("net");
-var NodeRSA = require('node-rsa');
-let readline = require('readline');
-let client=new net.Socket();
-let rl = readline.createInterface(process.stdin, process.stdout);
+const net=require("net");
+const NodeRSA = require('node-rsa');
+const readline = require('readline');
+let client= new net.Socket();
+const rl = readline.createInterface(process.stdin, process.stdout);
 
-let port = process.argv[3];
-let host = process.argv[2];
-let username =  process.argv[4] || 'Anonymous'
+const port = process.argv[2];
+const host = process.argv[3] || 'localhost';
+const username =  process.argv[4] || 'Anonymous'
+
 
 let serverRSA  = new NodeRSA({b: 512});
 let clientRSA  = new NodeRSA({b: 512});
+
+
 client.connect(port, host, function(){
     client.name = client.remoteAddress;
 	console.log(`Connected to ${client.name}`);
@@ -23,7 +26,12 @@ client.on("data",function(data){
 			serverRSA.importKey(data,'pkcs8-public');
 			console.log(data.toString());
 		 } else {
-			 console.log(clientRSA.decrypt(data.toString(), 'utf8')); 
+
+		 	message = JSON.parse(data);
+		 	msg = clientRSA.decrypt(message.msg, 'utf8');
+		 	if(serverRSA.verify(msg.toString(), message.sign.toString(), 'utf8', 'base64')) {
+		 		console.log(msg);
+		 	} else console.log("NOT VERYFED:"+msg);
 		 }
 			 
 		
@@ -32,12 +40,19 @@ client.on("data",function(data){
 
 
 function sendMsg(msg){
-    client.write(serverRSA.encrypt(msg, 'base64'));
+
+	let sign = clientRSA.sign(msg, 'base64');
+	let mes =  {
+		msg: serverRSA.encrypt(msg, 'base64'),
+		sign: sign
+	}
+    client.write(JSON.stringify(mes));
 }
 
 rl.on('line', function (line) {
     sendMsg(username+": "+line);  
 });
+
 
 function isPuplicKey (key) {
 	if(key.indexOf("BEGIN PUBLIC KEY-----")>0) {

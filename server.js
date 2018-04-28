@@ -1,12 +1,14 @@
-let NodeRSA = require('node-rsa');
-let net=require("net");
-let readline = require('readline');
-let port = process.argv[2];
-let username =  process.argv[3] || 'Anonymous'
+const NodeRSA = require('node-rsa');
+const net=require("net");
+const readline = require('readline');
+
+const port = process.argv[2];
+const username =  process.argv[3] || 'Anonymous'
+
 let socket;
 let client;
 
-let rl = readline.createInterface(process.stdin, process.stdout);
+const rl = readline.createInterface(process.stdin, process.stdout);
 let serverRSA  = new NodeRSA({b: 512});
 let clientRSA = new NodeRSA({b: 512});
 net.createServer(function(socket){
@@ -24,7 +26,12 @@ net.createServer(function(socket){
 			socket.write(serverRSA.exportKey('public'));	
 		 }
 		 else {
-			 console.log(serverRSA.decrypt(data, 'utf8'))
+		 	message = JSON.parse(data);
+		 	msg = serverRSA.decrypt(message.msg, 'utf8');
+		 	if(clientRSA.verify(msg.toString(), message.sign.toString(), 'utf8', 'base64')) {
+		 		console.log(msg);
+		 	} else console.log("NOT VERYFED:"+msg);
+			 
 		 }
     });
 
@@ -35,8 +42,13 @@ net.createServer(function(socket){
 }).listen(port);
 
 function sendMsg(msg){
-	
-    client.write(clientRSA.encrypt(msg, 'base64'));
+	let sign = serverRSA.sign(msg, 'base64');
+	let mes =  {
+		msg: clientRSA.encrypt(msg, 'base64'),
+		sign: sign
+	}
+
+    client.write( JSON.stringify(mes));
 }
 
 rl.on('line', function (line) {
