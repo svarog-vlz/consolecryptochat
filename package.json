@@ -1,6 +1,6 @@
 {
   "name": "cryptochat",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "Console cryptochat",
   "main": "index.js",
   "scripts": {
@@ -20,4 +20,4 @@
     "node-rsa": "^0.4.2",
 	"colors": "latest"
   }
-}
+} 
