@@ -1,6 +1,7 @@
 const net=require("net");
 const NodeRSA = require('node-rsa');
 const readline = require('readline');
+const color = require('colors');
 let client= new net.Socket();
 const rl = readline.createInterface(process.stdin, process.stdout);
 
@@ -15,23 +16,23 @@ let clientRSA  = new NodeRSA({b: 512});
 
 client.connect(port, host, function(){
     client.name = client.remoteAddress;
-	console.log(`Connected to ${client.name}`);
+	console.log(`Connected to ${color.red(client.name)}`);
 	client.write(clientRSA.exportKey('public'))
 });
 
 
 client.on("data",function(data){
 	if(isPuplicKey(data)) {
-			console.log("server public key:");	
+			console.log(`Encrypted connection established \n`);
 			serverRSA.importKey(data,'pkcs8-public');
-			console.log(data.toString());
+			//console.log(color.bgYellow.black(data.toString()));
 		 } else {
 
 		 	message = JSON.parse(data);
 		 	msg = clientRSA.decrypt(message.msg, 'utf8');
 		 	if(serverRSA.verify(msg.toString(), message.sign.toString(), 'utf8', 'base64')) {
-		 		console.log(msg);
-		 	} else console.log("NOT VERYFED:"+msg);
+		 		console.log(color.green(msg));
+		 	} else console.log(color.red("NOT VERYFED:"+msg));
 		 }
 			 
 		
@@ -50,7 +51,7 @@ function sendMsg(msg){
 }
 
 rl.on('line', function (line) {
-    sendMsg(username+": "+line);  
+    sendMsg(color.red(username+": ")+line);
 });
 
 

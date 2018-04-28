@@ -17,9 +17,7 @@
   },
   "homepage": "https://github.com/svarog-vlz/consolecryptochat#readme",
   "dependencies": {
-    "bn.js": "^4.11.8",
-    "diffie-hellman-key-exchange": "^1.2.2",
     "node-rsa": "^0.4.2",
-    "swim": "^0.6.0"
+	"colors": "latest"
   }
 }
